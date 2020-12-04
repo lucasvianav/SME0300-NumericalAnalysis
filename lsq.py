@@ -27,7 +27,7 @@ def trigLSQ(data):
 
     # F is the function approximation
     F = 0
-    for j, i in enumerate(alternatingRange(order)): F += sol[j][0] * sp.sympify(('cos(' if i['cos'] else 'sin(') + str(i['index']) + ' * pi/30 * x)')
+    for j, i in enumerate(alternatingRange(order)): F += sol[j][0] * sp.sympify(('cos(' if i['cos'] else 'sin(') + str(i['index']) + ' * x)')
 
     return F
 

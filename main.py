@@ -13,17 +13,17 @@ noMonths = len(rawData)
 noYears = int(noMonths/12)
 
 data60 = {
-    'x': [2*k*pi/noMonths for k in range(1, noMonths+1)],
+    'x': [noMonths*k/(2*pi) for k in range(1, noMonths+1)],
     'y': [p for p in y]
 }
 
 data12 = {
-    'x': [2*k*pi/12 for k in range(1, 12+1)],
+    'x': [12*k/(2*pi) for k in range(1, 12+1)],
     'y': [mean([y[i + n*12] for n in range(noYears)]) for i in range(12)]
 }
 
-F60 = trigLSQ(data60)
-F12 = trigLSQ(data12)
+F60 = trigLSQ(data60).subs(Symbol('x'), (2*pi/noMonths)*Symbol('t'))
+F12 = trigLSQ(data12).subs(Symbol('x'), (2*pi/12)*Symbol('t'))
 
 with open('./output/60-month_period.out', 'w') as f:
     f.write('data:\n')
@@ -37,16 +37,27 @@ with open('./output/12-month_period.out', 'w') as f:
     f.write('y: ' + str(data12['y']) + '\n\n')
     f.write('F(x): ' + str(F12))
 
-# plt.plot(data60['x'], data60['y'], '--',)
+# plt.plot(rawData['x'], rawData['y'], '--')
+# plt.scatter(rawData['x'], rawData['y'])
+# plt.ylabel('Precipitação')
+# plt.xlabel('Meses')
+# plt.show()
+# plt.cla()
+
+# plt.plot(data60['x'], data60['y'], '--')
+# plt.scatter(data60['x'], data60['y'])
+# plt.scatter(data60['x'], data60['y'])
 # plt.ylabel('Precipitação')
 # plt.xlabel('Meses * 2pi/60')
 # plt.savefig('output/60-month_period.png')
 
-plot(F60, (Symbol('x'), 0, 60))
-print(F60.subs(Symbol('x'), 2*72*pi/60).evalf())
+plot(F60, (Symbol('t'), 0, 60))
+plot(F60, (Symbol('t'), 0, 12))
+print(F60.subs(Symbol('t'), 72).evalf())
 
-plot(F12, (Symbol('x'), 0, 12))
-print(F12.subs(Symbol('x'), 2*72*pi/12).evalf())
+plot(F12, (Symbol('t'), 0, 12))
+plot(F12, (Symbol('t'), 0, 60))
+print(F12.subs(Symbol('t'), 72).evalf())
 
 # print('\nFunção considerando período de 5 anos:')
 # pprint(F60)
