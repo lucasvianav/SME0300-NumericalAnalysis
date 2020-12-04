@@ -15,19 +15,19 @@ def trigLSQ(data):
     c = lambda a : np.array([np.cos(a * float(data['x'][i])) for i in range(noPoints)])
     s = lambda a : np.array([np.sin(a * float(data['x'][i])) for i in range(noPoints)])
 
-    y = np.array([p for p in data['y']])
+    y = np.array([data['y'][i] for i in range(noPoints)])
 
-    # diagMatrix * sol = res
+    # matrix * sol = res
 
-    diagMatrix = np.array(
-        [[(noPoints/(1 if j == 0 else 2) if i == j else 0) for i in range(2*order + 1)] for j in range(2*order + 1)]
+    matrix = np.array(
+        [[np.dot(c(i['index']) if i['cos'] else s(i['index']), c(j['index']) if j['cos'] else s(j['index'])) for i in alternatingRange(order)] for j in alternatingRange(order)]
     )
     res = [[np.dot(y, c(i['index']) if i['cos'] else s(i['index']))] for i in alternatingRange(order)]
-    sol = np.linalg.solve(diagMatrix, res)
+    sol = np.linalg.solve(matrix, res)
 
     # F is the function approximation
     F = 0
-    for j, i in enumerate(alternatingRange(order)): F += sol[j][0] * sp.sympify(('cos(' if i['cos'] else 'sin(') + str(i['index']) + ' * pi/30 * x)')
+    for j, i in enumerate(alternatingRange(order)): F += sol[j][0] * sp.sympify(('cos(' if i['cos'] else 'sin(') + str(i['index']) + ' * 2*pi/12 * x)')
 
     return F
 
