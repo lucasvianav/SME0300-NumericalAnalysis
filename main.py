@@ -1,10 +1,10 @@
 from statistics import mean
 
 import matplotlib.pyplot as plt
-from sympy.plotting import plot
-from pandas import read_csv
-from sympy import pi, pprint, Symbol
 import numpy as np
+from pandas import read_csv
+from sympy import Symbol, pi, pprint
+
 from lsq import trigLSQ
 
 rawData = read_csv('data/data.csv', header=0, names=['x', 'y'])
@@ -13,22 +13,25 @@ x = rawData['x']; y = rawData['y']
 noMonths = len(rawData)
 noYears = int(noMonths/12)
 
+# t = 1,2, 3, 4, 5, ..., 60
+# x = t*pi/30 --> pi/30, pi/15, ..., 2pi
 data60 = {
-    'x': [(2*pi*k)/noMonths for k in range(1, noMonths+1)],
+    'x': [(2*pi*t)/noMonths for t in range(1, noMonths+1)],
     'y': [p for p in y]
 }
 
 data12 = {
-    'x': [(2*pi*k)/12 for k in range(1, 12+1)],
+    'x': [(2*pi*t)/12 for t in range(1, 12+1)],
     'y': [mean([y[i + n*12] for n in range(noYears)]) for i in range(12)]
 }
 
-order60 = 11; order12 = 4
+order60 = 11 # max 29
+order12 = 4 # max 5
 F60, aux60 = trigLSQ(data60, order60); F60 = F60.subs(Symbol('x'), (2*pi/noMonths)*Symbol('t'))
 F12, aux12 = trigLSQ(data12, order12); F12 = F12.subs(Symbol('x'), (2*pi/12)*Symbol('t'))
 
-f60 = lambda x: float(F60.subs(Symbol('t'), x).evalf())
-f12 = lambda x: float(F12.subs(Symbol('t'), x).evalf())
+f60 = lambda t: float(F60.subs(Symbol('t'), t).evalf()) # f60(t)
+f12 = lambda t: float(F12.subs(Symbol('t'), t).evalf()) # f12(t)
 
 x12 = np.linspace(0, 12, 100); y12 = 0
 for j, i in aux12[0]: y12 += aux12[1][j][0] * (np.cos(i['index'] * 2*np.pi/12 * x12) if i['cos'] else np.sin(i['index'] * 2*np.pi/12 * x12))
@@ -79,4 +82,5 @@ plt.ylabel('Precipitação')
 plt.xlabel('Mês (t)')
 plt.gcf().set_size_inches(9,6)
 plt.savefig('output/60-month_period.png', dpi=100)
+
 plt.show()

@@ -10,10 +10,10 @@ alternatingRange = lambda m : [{'index': j, 'cos': True if k == 0 else False} fo
 # data = {'x': [x-points], 'y': [y-points]}
 def trigLSQ(data, o = 0):
     noPoints = len(data['x']) # N
-    order = o if (o and o < noPoints/2) else (int(noPoints/2) if int(noPoints/2) < noPoints/2 else int(noPoints/2)-1) # m
+    order = o if (o > 0 and o < noPoints/2) else (int(noPoints/2) if int(noPoints/2) < noPoints/2 else int(noPoints/2)-1) # m
 
-    c = lambda a : np.array([np.cos(a * float(data['x'][i])) for i in range(noPoints)])
-    s = lambda a : np.array([np.sin(a * float(data['x'][i])) for i in range(noPoints)])
+    c = lambda a : np.array([np.cos(a * float(data['x'][i])) for i in range(noPoints)]) # c_alpha
+    s = lambda a : np.array([np.sin(a * float(data['x'][i])) for i in range(noPoints)]) # s_alpha
 
     y = np.array([p for p in data['y']])
 
@@ -30,5 +30,3 @@ def trigLSQ(data, o = 0):
     for j, i in enumerate(alternatingRange(order)): F += sol[j][0] * sp.sympify(('cos(' if i['cos'] else 'sin(') + str(i['index']) + ' * x)')
 
     return F, (enumerate(alternatingRange(order)), sol)
-
-# x = 2kpi/N --> k = xN/2pi
